@@ -1,0 +1,76 @@
+name: Offer discovery
+
+on:
+  schedule:
+    - cron: "19 */6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: open-ai-offer-discovery
+  cancel-in-progress: false
+
+jobs:
+  discover:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Prepare dedicated review branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch origin main
+          if git ls-remote --exit-code --heads origin automation/offer-discovery >/dev/null; then
+            git fetch origin automation/offer-discovery
+            git checkout -B automation/offer-discovery origin/automation/offer-discovery
+            git merge --no-edit origin/main
+          else
+            git checkout -b automation/offer-discovery origin/main
+          fi
+      - name: Install read-only inspector
+        run: python -m pip install -e .
+      - name: Discover official links
+        run: python scripts/discover_offers.py
+      - name: Draft PR only when new candidates exist
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          if [ ! -f data/discovered-candidates.json ]; then
+            echo "No candidate inbox created. No PR needed."
+            exit 0
+          fi
+          git add -- data/discovered-candidates.json
+          if git diff --cached --quiet; then
+            echo "No new candidates. No PR or commit."
+            exit 0
+          fi
+          git commit -m "data: propose new ChatGPT promotion links"
+          git push origin HEAD:automation/offer-discovery
+
+          existing="$(gh pr list --repo "${{ github.repository }}" \
+            --state open --head automation/offer-discovery \
+            --json number --jq '.[0].number // ""')"
+          if [ -z "$existing" ]; then
+            gh pr create --repo "${{ github.repository }}" \
+              --base main --head automation/offer-discovery --draft \
+              --title "data: review new ChatGPT promotion leads" \
+              --body "Official public links only; every entry remains **pending_review**. Verify region, offer status, eligibility, dates, claim URL and charges before merging or promoting it to the curated catalog. No account or billing data was accessed."
+          else
+            echo "Updated existing review PR #$existing"
+          fi

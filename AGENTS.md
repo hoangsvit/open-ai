@@ -18,3 +18,11 @@ An independent, read-only ChatGPT subscription and promotion information tool.
 - Offline tests must mock ADB; no real purchases or credentials in CI.
 - Submit independent Draft PRs; do not directly push implementation to main.
 - Follow research scope and unresolved constraints from issue #1.
+
+## Official offer discovery
+
+- New official links are unverified leads, not active offers. Use pending_review candidates and Draft PRs.
+- Published terms with no campaign claim deadline must never be labeled "Active"; expiration null means not published.
+- Preserve historical expired offers and filter stale (over 30 days since review) from current views.
+- Never promote a candidate, refresh verified dates or infer a price based solely on a search snippet.
+- Keep automated requests to approved OpenAI public pages with a capped response body and no user credentials.

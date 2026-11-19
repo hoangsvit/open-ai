@@ -15,11 +15,21 @@ class CatalogTests(unittest.TestCase):
         path.write_text(json.dumps(data), encoding="utf-8")
         return path
 
-    def test_default_has_sources_but_no_invented_offers(self):
-        result = load_catalog()
+    def test_default_contains_documented_veterans_and_expired_student_offer(self):
+        result = load_catalog(today=date(2026, 11, 19))
         self.assertGreaterEqual(len(result.references), 2)
-        self.assertEqual(result.offers, ())
+        self.assertEqual(len(result.offers), 1)
+        self.assertEqual(result.offers[0].status, "targeted")
+        self.assertIsNone(result.offers[0].expires_on)
+        self.assertIn("ID.me", result.offers[0].eligibility)
+        self.assertEqual(len(result.archived_offers), 1)
+        self.assertEqual(result.archived_offers[0].status, "expired")
         self.assertFalse(result.as_dict()["eligibility_verified"])
+
+    def test_stale_documented_program_is_not_shown_as_current(self):
+        result = load_catalog(today=date(2027, 1, 19))
+        self.assertFalse(result.offers)
+        self.assertEqual(len(result.archived_offers), 2)
 
     def test_only_fresh_unexpired_offers(self):
         day = date(2026, 11, 19)

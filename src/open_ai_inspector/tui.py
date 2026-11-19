@@ -116,15 +116,26 @@ class InspectorApp(App):
         for info in catalog.references:
             lines.extend([info.title, info.description, info.url, ""])
         if not catalog.offers:
-            lines.append("No currently verified public promotional offers in catalog.")
+            lines.append("No recently reviewed public promotion terms in catalog.")
         else:
-            lines.append("DATED PUBLIC OFFERS — account eligibility NOT verified")
+            lines.append("PUBLISHED PROMOTION TERMS — eligibility NOT verified\n")
             for offer in catalog.offers:
                 lines.extend([
-                    offer.title, "Region: " + offer.region,
-                    "Expires: " + offer.expires_on, offer.source_url, "",
+                    offer.title,
+                    "Status: " + offer.status + " (not a claimability guarantee)",
+                    "Benefit: " + offer.benefit,
+                    "Region: " + offer.region,
+                    "Conditions: " + offer.eligibility,
+                    "Claim deadline: " + (offer.expires_on or "not published"),
+                    "Terms: " + offer.source_url,
+                    "Official claim URL: " + (offer.claim_url or "not published"),
+                    "",
                 ])
-        self._show("\n".join(lines), "No account entitlement accessed")
+        if catalog.archived_offers:
+            lines.append("EXPIRED / STALE OFFERS — not available for claiming\n")
+            for offer in catalog.archived_offers:
+                lines.extend([offer.title, "Terms: " + offer.source_url, ""])
+        self._show("\n".join(lines), "Offer documentation is not account eligibility")
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         pressed = event.button.id
