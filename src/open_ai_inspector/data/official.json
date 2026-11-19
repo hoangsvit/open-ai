@@ -28,7 +28,10 @@
       "claim_url": "https://chatgpt.com/veterans-claim",
       "verified_on": "2026-11-19",
       "expires_on": null,
-      "status": "targeted"
+      "status": "targeted",
+      "provider": "OpenAI",
+      "offer_type": "subscription_benefit",
+      "billing_note": "Eligibility must be verified via ID.me; check subscription renewal terms in ChatGPT."
     },
     {
       "id": "codex-university-us-ca-2026",
@@ -40,7 +43,10 @@
       "claim_url": "https://chatgpt.com/codex/students",
       "verified_on": "2026-11-19",
       "expires_on": null,
-      "status": "targeted"
+      "status": "targeted",
+      "provider": "OpenAI",
+      "offer_type": "credits",
+      "billing_note": "Codex usage credits are not ChatGPT Plus, API credits, or a recurring free plan."
     },
     {
       "id": "chatgpt-teachers-us-2026",
@@ -52,7 +58,10 @@
       "claim_url": "https://chatgpt.com/k12-verification",
       "verified_on": "2026-11-19",
       "expires_on": null,
-      "status": "targeted"
+      "status": "targeted",
+      "provider": "OpenAI",
+      "offer_type": "education_plan",
+      "billing_note": "Institutional plan benefit, not an individual ChatGPT Plus/Pro entitlement."
     },
     {
       "id": "student-back-to-school-us-2026",
@@ -64,7 +73,115 @@
       "claim_url": null,
       "verified_on": "2026-11-19",
       "expires_on": "2026-10-31",
-      "status": "expired"
+      "status": "expired",
+      "provider": "OpenAI",
+      "offer_type": "subscription_trial",
+      "billing_note": "Claim period ended October 31, 2026; previously redeemed trials may have a separate end date."
+    },
+    {
+      "id": "india-chatgpt-go-12m-2025",
+      "title": "India: 12 months ChatGPT Go free (ended 21 Jan 2026)",
+      "benefit": "12 months of ChatGPT Go at no cost for eligible Indian customers",
+      "region": "India",
+      "eligibility": "India-based new users, Free users or existing Go subscribers; one redemption per account; payment method required (card or UPI).",
+      "source_url": "https://help.openai.com/en/articles/6825453-chatgpt-release-notes",
+      "claim_url": null,
+      "verified_on": "2026-11-19",
+      "expires_on": "2026-01-21",
+      "status": "expired",
+      "provider": "OpenAI",
+      "offer_type": "subscription_trial",
+      "billing_note": "New redemptions ended January 21, 2026. Existing subscribers may still be within their redeemed 12-month term; confirm next charge in account."
+    },
+    {
+      "id": "india-go-continuation-2026",
+      "title": "India: discounted ChatGPT Go continuation (account-specific)",
+      "benefit": "Account-specific reduced monthly price for three paid billing periods; not a second free year",
+      "region": "India",
+      "eligibility": "Only recipients of the India Go 12-month trial who see a continuation offer in their own eligible ChatGPT account on web or Android.",
+      "source_url": "https://help.openai.com/en/articles/20001631-chatgpt-go-india-trial-renewals-and-continuation-offers",
+      "claim_url": null,
+      "verified_on": "2026-11-19",
+      "expires_on": null,
+      "status": "targeted",
+      "provider": "OpenAI",
+      "offer_type": "paid_discount",
+      "billing_note": "Continuation offers are optional; after three discounted paid billing periods, the standard India Go monthly price applies unless cancelled. No public promo code."
+    },
+    {
+      "id": "shopeevip-vietnam-go-3m-2026",
+      "title": "Vietnam ShopeeVIP: 3 months ChatGPT Go free (expired)",
+      "benefit": "Three free months of ChatGPT Go with eligible ShopeeVIP membership",
+      "region": "Vietnam",
+      "eligibility": "Active ShopeeVIP, Vietnam (+84) ChatGPT account with no previous paid ChatGPT Go/Plus/Pro, valid international Visa/Mastercard; 600,000 claims limit.",
+      "source_url": "https://help.shopee.vn/portal/4/article/191651",
+      "claim_url": null,
+      "verified_on": "2026-11-19",
+      "expires_on": "2026-05-31",
+      "status": "expired",
+      "provider": "Shopee Vietnam",
+      "offer_type": "subscription_trial",
+      "billing_note": "Claim period April 13–May 31, 2026. Maintaining ShopeeVIP was required to keep full free period; ChatGPT Go renewal after trial was paid unless cancelled."
+    },
+    {
+      "id": "revolut-go-standard-plus-3m-2026",
+      "title": "Revolut Standard/Plus: 3 months ChatGPT Go free trial",
+      "benefit": "Three months ChatGPT Go free when invited and eligible through Revolut",
+      "region": "Europe, UK, Japan, Singapore",
+      "eligibility": "Invited Revolut Standard/Plus customer aged 18+, resident in an eligible market, opted in to marketing where required, and no ChatGPT subscription in previous three months.",
+      "source_url": "https://www.revolut.com/legal/chatgpt-3-months-trial-offer/",
+      "claim_url": null,
+      "verified_on": "2026-11-19",
+      "expires_on": "2027-07-29",
+      "status": "targeted",
+      "provider": "Revolut",
+      "offer_type": "subscription_trial",
+      "billing_note": "Offer period July 30, 2026–July 29, 2027; after trial ChatGPT Go auto-renews at the standard monthly price unless cancelled at least 24 hours before billing. Invitation is required."
+    },
+    {
+      "id": "revolut-go-paid-plans-2026",
+      "title": "Revolut paid plan benefit: 6–12 months ChatGPT Go",
+      "benefit": "Premium/Pro/Mobile: 6 months; Metal: 12 months; Ultra: 12 months plus 12-month buddy pass",
+      "region": "Selected Revolut markets",
+      "eligibility": "Eligible Revolut paid-plan customer; plan membership fees apply. Availability, one-time use and claim timing must be checked in the Revolut app.",
+      "source_url": "https://www.revolut.com/de-DE/news/revolut_partners_with_openai_to_bring_chatgpt_go_to_millions_of_customers/",
+      "claim_url": null,
+      "verified_on": "2026-11-19",
+      "expires_on": null,
+      "status": "targeted",
+      "provider": "Revolut",
+      "offer_type": "subscription_benefit",
+      "billing_note": "This is a perk of paid Revolut plans, not a universally free standalone Go plan. Revolut app and plan terms govern availability; no public claim link."
+    },
+    {
+      "id": "chatgpt-free-referral-three-countries-2026",
+      "title": "ChatGPT Free referral 2x usage limits (expired)",
+      "benefit": "Up to three 7-day awards doubling ChatGPT Free usage limits (21 days total)",
+      "region": "India, Indonesia, Mexico",
+      "eligibility": "Selected Free users with good-standing account at least 7 days old; qualifying new-user referrals in same country; not a paid subscription.",
+      "source_url": "https://help.openai.com/en/articles/20001479-chatgpt-free-referral-campaign",
+      "claim_url": null,
+      "verified_on": "2026-11-19",
+      "expires_on": "2026-09-17",
+      "status": "expired",
+      "provider": "OpenAI",
+      "offer_type": "usage_limits",
+      "billing_note": "Program ended September 17, 2026. It increased ChatGPT Free usage limits, not Plus/Go rights; never a 12-month subscription."
+    },
+    {
+      "id": "telkomsel-chatgpt-go-bundle-2025-26",
+      "title": "Telkomsel Indonesia: ChatGPT Go data bundle (expired)",
+      "benefit": "Paid Telkomsel bundle with ChatGPT Go access and data allowance (package dependent)",
+      "region": "Indonesia",
+      "eligibility": "Eligible Telkomsel customers purchasing a qualifying data package and redeeming a partner voucher.",
+      "source_url": "https://www.telkomsel.com/jelajah/jelajah-lifestyle/promo-telkomsel-paket-chatgpt-bikin-kerjaan-lebih-simpel",
+      "claim_url": null,
+      "verified_on": "2026-11-19",
+      "expires_on": "2026-05-31",
+      "status": "expired",
+      "provider": "Telkomsel",
+      "offer_type": "paid_discount",
+      "billing_note": "The original promotional bundle ran October 31, 2025–May 31, 2026; it was a paid telco bundle, not a universally free ChatGPT subscription."
     }
   ]
 }

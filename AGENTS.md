@@ -26,3 +26,11 @@ An independent, read-only ChatGPT subscription and promotion information tool.
 - Preserve historical expired offers and filter stale (over 30 days since review) from current views.
 - Never promote a candidate, refresh verified dates or infer a price based solely on a search snippet.
 - Keep automated requests to approved OpenAI public pages with a capped response body and no user credentials.
+
+## Partner offers and redemption
+
+- Allow only precisely vetted partner hosts as documentation sources. No suffix-based host matching or private referral URLs.
+- Claim URLs must remain official OpenAI/ChatGPT URLs; documentation URLs are not necessarily claim URLs.
+- Separate subscription trials, paid Revolut plan perks, paid continuation discounts and temporary Free usage-limit boosts.
+- Archive expired programs; explain paid renewal terms and do not assume an unknown deadline means currently claimable.
+- Current scheduled discovery monitors OpenAI public sources, not Shopee/Revolut/Telkomsel. Partner catalog data requires manual verification.
