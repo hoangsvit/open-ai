@@ -18,10 +18,12 @@ class CatalogTests(unittest.TestCase):
     def test_default_contains_documented_veterans_and_expired_student_offer(self):
         result = load_catalog(today=date(2026, 11, 19))
         self.assertGreaterEqual(len(result.references), 2)
-        self.assertEqual(len(result.offers), 1)
+        self.assertEqual(len(result.offers), 3)
         self.assertEqual(result.offers[0].status, "targeted")
         self.assertIsNone(result.offers[0].expires_on)
         self.assertIn("ID.me", result.offers[0].eligibility)
+        self.assertTrue(any("Codex" in x.title and "not a Plus" in x.title for x in result.offers))
+        self.assertTrue(any("Teachers" in x.title for x in result.offers))
         self.assertEqual(len(result.archived_offers), 1)
         self.assertEqual(result.archived_offers[0].status, "expired")
         self.assertFalse(result.as_dict()["eligibility_verified"])
@@ -29,7 +31,7 @@ class CatalogTests(unittest.TestCase):
     def test_stale_documented_program_is_not_shown_as_current(self):
         result = load_catalog(today=date(2027, 1, 19))
         self.assertFalse(result.offers)
-        self.assertEqual(len(result.archived_offers), 2)
+        self.assertEqual(len(result.archived_offers), 4)
 
     def test_only_fresh_unexpired_offers(self):
         day = date(2026, 11, 19)
