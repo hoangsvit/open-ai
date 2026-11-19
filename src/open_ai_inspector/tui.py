@@ -123,7 +123,9 @@ class InspectorApp(App):
                 lines.extend([
                     offer.title,
                     "Status: " + offer.status + " (not a claimability guarantee)",
+                    "Provider: " + offer.provider + " | Type: " + offer.offer_type,
                     "Benefit: " + offer.benefit,
+                    "Renewal: " + (offer.billing_note or "See provider terms"),
                     "Region: " + offer.region,
                     "Conditions: " + offer.eligibility,
                     "Claim deadline: " + (offer.expires_on or "not published"),
