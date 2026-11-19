@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "eplus-chatgpt-inspector"
+version = "0.1.0"
+description = "Read-only ChatGPT Android and subscription inspector"
+requires-python = ">=3.10"
+dependencies = []
+readme = "README.md"
+
+[project.optional-dependencies]
+tui = ["textual>=4,<10"]
+
+[project.scripts]
+open-ai-inspector = "open_ai_inspector.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+open_ai_inspector = ["data/*.json"]
