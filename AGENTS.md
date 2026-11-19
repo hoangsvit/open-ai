@@ -34,3 +34,10 @@ An independent, read-only ChatGPT subscription and promotion information tool.
 - Separate subscription trials, paid Revolut plan perks, paid continuation discounts and temporary Free usage-limit boosts.
 - Archive expired programs; explain paid renewal terms and do not assume an unknown deadline means currently claimable.
 - Current scheduled discovery monitors OpenAI public sources, not Shopee/Revolut/Telkomsel. Partner catalog data requires manual verification.
+
+## Status/data integrity regressions
+
+- Always distinguish `expired` from `needs_reverification`; a stale source alone does not prove an offer ended.
+- Do not include archived records in default `promos --json`; `--include-archived` explicitly opts in.
+- A source returning HTTP 200 with no parseable links is not a successful scan; log non-sensitive diagnostics and fail if no useful source remains.
+- Offer-first TUI; Android/ADB is optional and must never trigger on launch.
