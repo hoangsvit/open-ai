@@ -134,9 +134,18 @@ class InspectorApp(App):
                     "",
                 ])
         if catalog.archived_offers:
-            lines.append("EXPIRED / STALE OFFERS — not available for claiming\n")
+            lines.append("ARCHIVED PROGRAMS — expired or need renewed verification\n")
             for offer in catalog.archived_offers:
-                lines.extend([offer.title, "Terms: " + offer.source_url, ""])
+                explanation = (
+                    "Claim window ended" if offer.archive_reason == "expired"
+                    else "Public evidence is stale; current claimability UNKNOWN"
+                )
+                lines.extend([
+                    offer.title,
+                    "Evidence status: " + explanation,
+                    "Claim deadline: " + (offer.expires_on or "not published"),
+                    "Terms: " + offer.source_url, "",
+                ])
         self._show("\n".join(lines), "Offer documentation is not account eligibility")
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
