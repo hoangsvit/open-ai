@@ -82,7 +82,10 @@ def main(argv: list[str] | None = None) -> int:
                     print("  " + offer.title + " [" + offer.region + "]")
                     print("  Status: " + offer.status + " | Claim deadline: " +
                           (offer.expires_on or "not published"))
+                    print("  Provider: " + offer.provider + " | Type: " + offer.offer_type)
                     print("  Benefit: " + offer.benefit)
+                    if offer.billing_note:
+                        print("  Billing/renewal: " + offer.billing_note)
                     print("  Eligibility: " + offer.eligibility)
                     print("  Terms: " + offer.source_url)
                     if offer.claim_url:
@@ -90,6 +93,7 @@ def main(argv: list[str] | None = None) -> int:
             if args.include_expired:
                 print("Expired or stale programs (NOT currently claimable):")
                 for offer in catalog.archived_offers:
+                    print("  Provider: " + offer.provider + " | Type: " + offer.offer_type)
                     print("  " + offer.title + " | ended: " +
                           (offer.expires_on or "not confirmed") + " | " + offer.source_url)
         return 0
