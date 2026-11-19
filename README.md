@@ -8,7 +8,7 @@ An **unofficial, read-only** Python toolkit for checking the installed ChatGPT A
 
 - **Detect Android app:** checks package `com.openai.chatgpt` with ADB, shows version if available, and does not print device serials.
 - **Manage subscription:** provides official management pages for web, Google Play and Apple, opened only after explicit user action.
-- **Explore promotions:** shows official terms for verified public programs with eligibility warnings, including a U.S.-targeted veteran benefit and an expired 2026 student campaign. Source dates must be manually rechecked; no invented codes or account guarantees.
+- **Explore promotions:** shows official terms for verified public programs with eligibility warnings, including a U.S.-targeted veteran benefit, university Codex credits, ChatGPT for Teachers and an expired 2026 student campaign. These are different benefit types, not all Plus subscriptions. Source dates must be manually rechecked; no invented codes or account guarantees.
 - **Optional Textual dashboard:** simple, readable navigation with status details.
 
 MuMuPlayer, root, Frida and an emulator are **not required** for the information features. Android inspection needs the [Android SDK Platform-Tools](https://developer.android.com/tools/releases/platform-tools) and an authorized connected device/emulator.
