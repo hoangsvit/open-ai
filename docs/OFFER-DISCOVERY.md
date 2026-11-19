@@ -5,6 +5,8 @@ Published terms are **not** a guarantee of account eligibility or a claimable pr
 ## Manually researched examples (2026-11-19)
 
 - **Targeted, no published claim deadline:** [U.S. service member and veteran terms](https://help.openai.com/en/articles/12803158-chatgpt-plus-for-service-members-veterans-retirees-terms-of-service). The one-year Plus benefit requires a qualifying service-transition window, an eligible personal account, and ID.me. No published deadline does not mean guaranteed availability.
+- **Targeted non-subscription credits:** [Codex for Students](https://help.openai.com/en/articles/20001147-codex-credits-for-students-terms-of-service) offers $100/2,500 Codex usage credits for verified university students in eligible U.S./Canadian institutions. Not Plus and not API credits.
+- **Targeted education product:** [ChatGPT for Teachers](https://help.openai.com/en/articles/12844995/) is free through June 2028 for eligible verified U.S. K–12 educators. Not a standard Plus/Pro subscription.
 - **Expired:** [2026 Back to School student promotion](https://help.openai.com/en/articles/20001493-chatgpt-back-to-school-offer-for-students). Four free Plus billing periods, for eligible students; claiming ended **October 31, 2026**. Only appears in archived records.
 
 ## Automatic discovery (scheduled every 6 hours)
