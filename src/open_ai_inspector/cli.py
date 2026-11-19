@@ -1,0 +1,101 @@
+"""Read-only CLI. Textual is optional and imported only when requested."""
+
+from __future__ import annotations
+
+import argparse
+import json
+import sys
+
+from .catalog import CatalogError, load_catalog
+from .device_probe import probe_android
+from .subscriptions import guide_for, open_official_page
+
+
+def build_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(
+        prog="open-ai-inspector",
+        description="Read-only ChatGPT Android and subscription inspector.",
+    )
+    cmds = parser.add_subparsers(dest="command")
+    inspect = cmds.add_parser("inspect", help="Detect official ChatGPT Android app with ADB")
+    inspect.add_argument("--adb", help="Optional ADB executable path")
+    inspect.add_argument("--serial", help="Device serial from adb devices")
+    inspect.add_argument("--json", action="store_true")
+
+    subs = cmds.add_parser("subscriptions", help="Official subscription-management guidance")
+    subs.add_argument("--platform", choices=["web", "google", "apple"], default="web")
+    subs.add_argument("--open", action="store_true", help="Open official URL in browser")
+
+    offers = cmds.add_parser("promos", help="Official resources and dated public offers")
+    offers.add_argument("--catalog", help="Optional local JSON catalog")
+    offers.add_argument("--json", action="store_true")
+
+    tui = cmds.add_parser("tui", help="Interactive Textual dashboard")
+    tui.add_argument("--adb")
+    tui.add_argument("--serial")
+    return parser
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = build_parser()
+    args = parser.parse_args(argv)
+    command = args.command or "tui"
+    if command == "inspect":
+        result = probe_android(adb=args.adb, serial=args.serial)
+        if args.json:
+            print(json.dumps(result.as_dict(), ensure_ascii=False, indent=2))
+        else:
+            print(result.message)
+            print("App installed:", result.installed if result.installed is not None else "Unknown")
+            if result.version:
+                print("Version:", result.version)
+            print("Subscription and eligibility: NOT VERIFIED")
+        return 0 if result.state == "detected" else 1
+
+    if command == "subscriptions":
+        guide = guide_for(args.platform)
+        print(guide.title + "\n" + guide.instructions + "\n" + guide.url)
+        print("Your subscription status cannot be verified by this tool.")
+        if args.open and not open_official_page(args.platform):
+            print("Browser did not open; use the URL above.", file=sys.stderr)
+            return 1
+        return 0
+
+    if command == "promos":
+        try:
+            catalog = load_catalog(args.catalog)
+        except CatalogError as exc:
+            print("Catalog error: " + str(exc), file=sys.stderr)
+            return 2
+        if args.json:
+            print(json.dumps(catalog.as_dict(), ensure_ascii=False, indent=2))
+        else:
+            print("Official information resources:")
+            for ref in catalog.references:
+                print("  " + ref.title + ": " + ref.url)
+            if not catalog.offers:
+                print("No currently verified public promotional offers in the catalog.")
+            else:
+                print("Public offers (individual eligibility NOT verified):")
+                for offer in catalog.offers:
+                    print("  " + offer.title + " [" + offer.region + "] "
+                          + offer.expires_on + " - " + offer.source_url)
+        return 0
+
+    if command == "tui":
+        try:
+            from .tui import InspectorApp
+        except ModuleNotFoundError as exc:
+            if exc.name and (exc.name == "textual" or exc.name.startswith("textual.")):
+                print('Install UI: python -m pip install -e ".[tui]"', file=sys.stderr)
+                return 2
+            raise
+        InspectorApp(adb=getattr(args, "adb", None),
+                     serial=getattr(args, "serial", None)).run()
+        return 0
+    parser.error("Unsupported command")
+    return 2
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

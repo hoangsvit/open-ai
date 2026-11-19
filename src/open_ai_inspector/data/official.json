@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "references": [
+    {
+      "title": "Manage and cancel a subscription",
+      "description": "Official ChatGPT cancellation guidance for web and mobile purchases.",
+      "url": "https://help.openai.com/en/articles/7232927-canceling-your-chatgpt-subscription"
+    },
+    {
+      "title": "Promotion and trial invitation FAQ",
+      "description": "Rules and limitations for eligible users; not a redeemable offer.",
+      "url": "https://help.openai.com/en/articles/8381046-chatgpt-promotional-subscriptionsfree-trial-invites-faq"
+    },
+    {
+      "title": "Avoid double subscriptions",
+      "description": "Check the original purchase platform before subscribing again.",
+      "url": "https://help.openai.com/en/articles/20001043-how-do-i-avoid-being-charged-twice-if-i-subscribe-to-chatgpt-on-ios-android-and-the-web"
+    }
+  ],
+  "offers": []
+}
