@@ -29,6 +29,7 @@ def build_parser() -> argparse.ArgumentParser:
     offers = cmds.add_parser("promos", help="Official resources and dated public offers")
     offers.add_argument("--catalog", help="Optional local JSON catalog")
     offers.add_argument("--json", action="store_true")
+    offers.add_argument("--include-expired", action="store_true", help="Show archived or stale promotions")
 
     tui = cmds.add_parser("tui", help="Interactive Textual dashboard")
     tui.add_argument("--adb")
@@ -74,12 +75,23 @@ def main(argv: list[str] | None = None) -> int:
             for ref in catalog.references:
                 print("  " + ref.title + ": " + ref.url)
             if not catalog.offers:
-                print("No currently verified public promotional offers in the catalog.")
+                print("No recently reviewed public promotion terms in the catalog.")
             else:
-                print("Public offers (individual eligibility NOT verified):")
+                print("Documented programs (availability and account eligibility NOT guaranteed):")
                 for offer in catalog.offers:
-                    print("  " + offer.title + " [" + offer.region + "] "
-                          + offer.expires_on + " - " + offer.source_url)
+                    print("  " + offer.title + " [" + offer.region + "]")
+                    print("  Status: " + offer.status + " | Claim deadline: " +
+                          (offer.expires_on or "not published"))
+                    print("  Benefit: " + offer.benefit)
+                    print("  Eligibility: " + offer.eligibility)
+                    print("  Terms: " + offer.source_url)
+                    if offer.claim_url:
+                        print("  Official claim page: " + offer.claim_url)
+            if args.include_expired:
+                print("Expired or stale programs (NOT currently claimable):")
+                for offer in catalog.archived_offers:
+                    print("  " + offer.title + " | ended: " +
+                          (offer.expires_on or "not confirmed") + " | " + offer.source_url)
         return 0
 
     if command == "tui":

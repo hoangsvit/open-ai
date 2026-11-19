@@ -35,7 +35,9 @@ class CliTests(unittest.TestCase):
         with contextlib.redirect_stdout(out):
             result = main(["promos"])
         self.assertEqual(result, 0)
-        self.assertIn("No currently verified", out.getvalue())
+        self.assertIn("Documented programs", out.getvalue())
+        self.assertIn("Claim deadline: not published", out.getvalue())
+        self.assertIn("eligibility NOT guaranteed", out.getvalue())
 
     def test_only_approved_platforms(self):
         for platform in ("web", "google", "apple"):

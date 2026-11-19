@@ -1,5 +1,5 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "references": [
     {
       "title": "Manage and cancel a subscription",
@@ -8,14 +8,63 @@
     },
     {
       "title": "Promotion and trial invitation FAQ",
-      "description": "Rules and limitations for eligible users; not a redeemable offer.",
+      "description": "Eligibility rules and limitations; not a redeemable offer for everyone.",
       "url": "https://help.openai.com/en/articles/8381046-chatgpt-promotional-subscriptionsfree-trial-invites-faq"
     },
     {
       "title": "Avoid double subscriptions",
-      "description": "Check the original purchase platform before subscribing again.",
+      "description": "Check your original purchase platform before subscribing again.",
       "url": "https://help.openai.com/en/articles/20001043-how-do-i-avoid-being-charged-twice-if-i-subscribe-to-chatgpt-on-ios-android-and-the-web"
     }
   ],
-  "offers": []
+  "offers": [
+    {
+      "id": "veterans-us-2026",
+      "title": "ChatGPT Plus: one year for eligible U.S. military transition",
+      "benefit": "One free year of ChatGPT Plus after eligibility verification",
+      "region": "United States",
+      "eligibility": "Verified U.S. veterans/retirees separated within past 12 months or active service members transitioning within next 12 months; ID.me verification and eligible personal ChatGPT account required.",
+      "source_url": "https://help.openai.com/en/articles/12803158-chatgpt-plus-for-service-members-veterans-retirees-terms-of-service",
+      "claim_url": "https://chatgpt.com/veterans-claim",
+      "verified_on": "2026-11-19",
+      "expires_on": null,
+      "status": "targeted"
+    },
+    {
+      "id": "codex-university-us-ca-2026",
+      "title": "Codex for Students: $100 usage credits (not a Plus subscription)",
+      "benefit": "$100 / 2,500 credits for Codex usage in ChatGPT (not API credits)",
+      "region": "United States and Canada",
+      "eligibility": "Verified university student at an eligible U.S. or Canadian institution, resident in an eligible country; requires SheerID verification and a ChatGPT account.",
+      "source_url": "https://help.openai.com/en/articles/20001147-codex-credits-for-students-terms-of-service",
+      "claim_url": "https://chatgpt.com/codex/students",
+      "verified_on": "2026-11-19",
+      "expires_on": null,
+      "status": "targeted"
+    },
+    {
+      "id": "chatgpt-teachers-us-2026",
+      "title": "ChatGPT for Teachers: free for eligible U.S. K–12 educators",
+      "benefit": "ChatGPT for Teachers plan free through June 2028 (not a Plus or Pro subscription)",
+      "region": "United States",
+      "eligibility": "Teachers, staff and school leaders at eligible accredited U.S. K–12 schools/districts; institutional verification required, not for students.",
+      "source_url": "https://help.openai.com/en/articles/12844995/",
+      "claim_url": "https://chatgpt.com/k12-verification",
+      "verified_on": "2026-11-19",
+      "expires_on": null,
+      "status": "targeted"
+    },
+    {
+      "id": "student-back-to-school-us-2026",
+      "title": "Back to School 2026: four free Plus months (expired)",
+      "benefit": "Four free monthly billing periods of ChatGPT Plus",
+      "region": "United States",
+      "eligibility": "Eligible students verified under program rules; claim closed October 31, 2026.",
+      "source_url": "https://help.openai.com/en/articles/20001493-chatgpt-back-to-school-offer-for-students",
+      "claim_url": null,
+      "verified_on": "2026-11-19",
+      "expires_on": "2026-10-31",
+      "status": "expired"
+    }
+  ]
 }
