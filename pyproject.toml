@@ -12,6 +12,7 @@ readme = "README.md"
 
 [project.optional-dependencies]
 tui = ["textual>=4,<10"]
+billing = ["frida==16.5.9"]  # Optional, installed manually for opt-in runtime scan
 
 [project.scripts]
 open-ai-inspector = "open_ai_inspector.cli:main"
@@ -20,4 +21,4 @@ open-ai-inspector = "open_ai_inspector.cli:main"
 where = ["src"]
 
 [tool.setuptools.package-data]
-open_ai_inspector = ["data/*.json"]
+open_ai_inspector = ["data/*.json", "data/*.js"]
