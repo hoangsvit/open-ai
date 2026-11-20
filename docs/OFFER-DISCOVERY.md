@@ -29,7 +29,7 @@ Published terms are **not** a guarantee of account eligibility or a claimable pr
 
 ## Automatic discovery (scheduled every 6 hours)
 
-A GitHub Actions job scans selected **public** pages at OpenAI Help Center and OpenAI News. **Partner offers are researched manually**; current scheduled discovery does not crawl Shopee, Revolut or Telkomsel. Only promotion-like links to approved official HTTPS domains become candidates marked `pending_review`. It does not query a logged-in account, infer offer eligibility or fetch a Play purchase token.
+A GitHub Actions job scans public OpenAI Help Center and OpenAI News HTML pages, **plus the official [OpenAI News RSS feed](https://openai.com/news/rss.xml)**. RSS provides an independent, structured fallback when search/landing HTML returns HTTP 403/404 or requires JavaScript. **Partner offers are researched manually**; scheduled discovery does not crawl Shopee, Revolut or Telkomsel. Only promotion-like links to approved official HTTPS domains become candidates marked `pending_review`. It does not query a logged-in account, infer offer eligibility or fetch a Play purchase token.
 
 - Suggestions are deduplicated against the curated references, current and expired programs, and candidates already submitted.
 - New leads go to `data/discovered-candidates.json` in a **Draft PR** from `automation/offer-discovery`, never directly to `main`.
@@ -56,3 +56,12 @@ Only the discovery script uses public network requests. Offer catalog reads are 
 - `archive_reason=needs_reverification`: the evidence is more than 30 days old or dated in the future; **do not claim the promotion ended**. It may remain available, but current eligibility must be reconfirmed.
 - Neither a public source nor a successful crawler run confirms personal eligibility or a completed redemption.
 - A scheduled job can be tested by opening GitHub **Actions → Offer discovery → Run workflow** after merge. Inspect the actual logs for parseable links, source warnings and GitHub's permission to create Draft PRs.
+
+## Source outage diagnosed (20 November 2026)
+
+[Scheduled run #44647959580](https://github.com/hoangsvit/open-ai/actions/runs/44647959580) failed because **all three HTML sources raised HTTPError**. A public browser/indexer being able to read a page is not proof that GitHub Actions can access it. RSS fallback is designed to improve coverage, not bypass access controls: the feed is an openly published official source, not an authenticated or hidden API. The workflow continues to **fail closed** if both HTML and RSS are unavailable or have no parseable items.
+
+- A readable RSS feed does not imply any newly available promotion; when no promotion-like articles are found the job logs a sanitized warning and creates **no Draft PR**.
+- All entries from RSS are **pending_review** and have the same OpenAI HTTPS domain and allowed-article-path checks as HTML candidates.
+- Structured feed parsing is capped at 1 MB / 200 entries and rejects DTD/ENTITY. No third-party proxy, scraping bypass, login or billing token.
+- **Live GitHub-hosted fetching must be verified** after merging this change. Offline CI tests cannot prove OpenAI's RSS endpoint will be reachable from GitHub runners.
