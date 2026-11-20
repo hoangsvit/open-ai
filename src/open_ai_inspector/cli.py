@@ -126,7 +126,7 @@ def main(argv: list[str] | None = None) -> int:
             print("ChatGPT version:", outcome.app_version or "unknown")
             print("Frida runtime:", outcome.runtime_status)
             if outcome.billing_library_loaded is not None:
-                print("BillingClient class observed:", outcome.billing_library_loaded)
+                print("Google Play Billing class observed:", outcome.billing_library_loaded)
                 print("Loaded class names:", ", ".join(outcome.billing_classes_loaded) or "none")
             print(outcome.message)
             print("Personal eligibility: NOT VERIFIED; subscription: NOT VERIFIED")
