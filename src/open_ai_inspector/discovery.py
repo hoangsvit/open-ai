@@ -8,6 +8,7 @@ from __future__ import annotations
 
 from dataclasses import asdict, dataclass
 from html.parser import HTMLParser
+import xml.etree.ElementTree as ET
 import re
 from typing import Callable
 from urllib.error import HTTPError, URLError
@@ -15,6 +16,8 @@ from urllib.parse import urljoin, urlsplit, urlunsplit
 from urllib.request import HTTPRedirectHandler, Request, build_opener
 
 from .catalog import CatalogError, Catalog, official_url
+
+OFFICIAL_FEEDS = ("https://openai.com/news/rss.xml",)
 
 DISCOVERY_ROOTS = (
     "https://help.openai.com/en/?q=chatgpt+promotions",
@@ -104,11 +107,65 @@ def fetch_official_html(url: str) -> str:
         return content.decode("utf-8", errors="replace")
 
 
+def fetch_official_feed(url: str) -> str:
+    """Read bounded, unauthenticated XML from an exact official OpenAI host."""
+    official_url(url)
+    request = Request(url, headers={
+        "User-Agent": "ePlus-ChatGPT-Offer-Inspector/0.2 (+https://github.com/hoangsvit/open-ai)",
+        "Accept": "application/rss+xml, application/atom+xml, application/xml, text/xml",
+    })
+    with build_opener(_OfficialRedirects()).open(request, timeout=12) as response:
+        official_url(response.geturl())
+        content_type = response.headers.get("Content-Type", "").lower()
+        if not any(item in content_type for item in ("xml", "rss", "atom")):
+            raise DiscoveryError("Not XML")
+        body = response.read(1_000_001)
+        if len(body) > 1_000_000:
+            raise DiscoveryError("XML too large")
+        return body.decode("utf-8", errors="replace")
+
+
+def _feed_links(xml_text: str) -> list[tuple[str, str]]:
+    """Parse standard RSS/Atom entries, not external entities or arbitrary HTML."""
+    try:
+        root = ET.fromstring(xml_text)
+    except ET.ParseError as exc:
+        raise DiscoveryError("Invalid XML feed") from exc
+    kind = root.tag.rsplit("}", 1)[-1].lower()
+    if kind not in ("rss", "feed"):
+        raise DiscoveryError("Unexpected feed root")
+    records: list[tuple[str, str]] = []
+    if kind == "rss":
+        entries = root.findall("./channel/item")
+        for entry in entries[:200]:
+            title = " ".join((entry.findtext("title") or "").split())[:180]
+            link = (entry.findtext("link") or "").strip()
+            if title and link:
+                records.append((link, title))
+    else:
+        for entry in list(root)[:200]:
+            if entry.tag.rsplit("}", 1)[-1].lower() != "entry":
+                continue
+            title = " ".join((entry.findtext("{*}title") or "").split())[:180]
+            link = next(
+                (node.get("href", "") for node in entry.findall("{*}link")
+                 if node.get("rel", "alternate") == "alternate"),
+                "",
+            )
+            if title and link:
+                records.append((link, title))
+    if not records:
+        raise DiscoveryError("Feed has no parseable article items")
+    return records
+
+
 def discover_candidates(
     catalog: Catalog,
     fetcher: Callable[[str], str] = fetch_official_html,
     roots: tuple[str, ...] = DISCOVERY_ROOTS,
     previously_seen: set[str] | None = None,
+    feed_roots: tuple[str, ...] = (),
+    feed_fetcher: Callable[[str], str] = fetch_official_feed,
 ) -> tuple[list[Candidate], list[str], int]:
     known = set(previously_seen or set())
     for item in catalog.references:
@@ -155,4 +212,34 @@ def discover_candidates(
             )
         if len(suggestions) >= 30:
             break
+    # RSS is the official alternative to dynamic/blocked news landing pages.
+    # Feed items remain *unverified leads*, never validated entitlements.
+    for source in feed_roots:
+        if len(suggestions) >= 30:
+            break
+        try:
+            official_url(source)
+            entries = _feed_links(feed_fetcher(source))
+        except (CatalogError, DiscoveryError, HTTPError, URLError, OSError, TimeoutError) as exc:
+            # Avoid emitting raw URLs, response bodies, tokens or exception text.
+            code = " HTTP " + str(exc.code) if isinstance(exc, HTTPError) else ""
+            errors.append("Official RSS unavailable (" + type(exc).__name__ + code + ")")
+            continue
+        scanned += 1
+        matching = 0
+        for href, title in entries:
+            try:
+                link = canonical_url(urljoin(source, href))
+            except (CatalogError, ValueError):
+                continue
+            if not (_PROMO_TERMS.search(title) or _PATH_TERMS.search(urlsplit(link).path)):
+                continue
+            matching += 1
+            if link in known or link in suggestions:
+                continue
+            suggestions[link] = Candidate(title=title, url=link, discovered_from=source)
+            if len(suggestions) >= 30:
+                break
+        if not matching:
+            errors.append("Official RSS readable, no ChatGPT promotion articles matched")
     return sorted(suggestions.values(), key=lambda item: item.url), errors, scanned
