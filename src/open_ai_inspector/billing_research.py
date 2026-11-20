@@ -180,7 +180,7 @@ def inspect_billing(
             )
     status, names, message = _class_probe(frida_module, frida_device_id)
     # A loaded class is not a product/offer or proof an account is eligible.
-    loaded = any(name.endswith(".BillingClient") for name in names) if status == "complete" else None
+    loaded = bool(names) if status == "complete" else None
     return BillingProbeResult(
         "inspected", message, True, app.version, play_installed,
         status, names, loaded,
