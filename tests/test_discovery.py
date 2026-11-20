@@ -1,6 +1,7 @@
 """Offline discovery tests. No websites, accounts or purchase flows accessed."""
 
 import unittest
+from urllib.error import HTTPError
 
 from open_ai_inspector.catalog import Catalog, PublicOffer, Reference, CatalogError
 from open_ai_inspector.discovery import canonical_url, discover_candidates
@@ -131,6 +132,30 @@ class DiscoveryTests(unittest.TestCase):
                 self.assertEqual(count, 0)
                 self.assertEqual(suggestions, [])
                 self.assertTrue(any("RSS unavailable" in e for e in errors))
+
+    def test_rss_entity_declaration_is_rejected(self):
+        # Even small XML bombs or other DTD definitions are never parsed.
+        xml = '<!DOCTYPE rss [<!ENTITY spam "secret">]><rss><channel></channel></rss>'
+        suggestions, errors, scanned = discover_candidates(
+            self.catalog, roots=(),
+            feed_roots=("https://openai.com/news/rss.xml",),
+            feed_fetcher=lambda _: xml,
+        )
+        self.assertFalse(suggestions)
+        self.assertEqual(scanned, 0)
+        self.assertTrue(any("RSS unavailable" in item for item in errors))
+
+    def test_http_diagnostics_include_only_safe_code_and_host(self):
+        secret = "account@example.com"
+        def reject(_):
+            raise HTTPError(ROOT, 403, secret, {}, None)
+        suggestions, errors, scanned = discover_candidates(
+            self.catalog, roots=(ROOT,), fetcher=reject,
+        )
+        self.assertFalse(suggestions)
+        self.assertEqual(scanned, 0)
+        self.assertTrue(any("HTTP 403" in e for e in errors))
+        self.assertFalse(any(secret in e for e in errors))
 
     def test_atom_feed_is_read_as_pending_review_only(self):
         xml = """<feed xmlns="http://www.w3.org/2005/Atom">
