@@ -31,6 +31,19 @@ def build_parser() -> argparse.ArgumentParser:
     offers.add_argument("--json", action="store_true")
     offers.add_argument("--include-expired", action="store_true", help="Show archived or stale promotions")
 
+    billing = cmds.add_parser(
+        "billing-probe",
+        help="Read-only Android Play Billing integration research (no offer tokens or checkout)",
+    )
+    billing.add_argument("--adb", help="Optional path to ADB executable")
+    billing.add_argument("--serial", help="ADB serial if multiple Android devices are connected")
+    billing.add_argument(
+        "--runtime", action="store_true",
+        help="Opt in to attaching Frida 16.5.9 to the running app for class-name inventory",
+    )
+    billing.add_argument("--frida-device-id", help="Explicit Frida device ID for runtime inspection")
+    billing.add_argument("--json", action="store_true", help="Print sanitized structured report")
+
     tui = cmds.add_parser("tui", help="Interactive Textual dashboard")
     tui.add_argument("--adb")
     tui.add_argument("--serial")
@@ -97,6 +110,30 @@ def main(argv: list[str] | None = None) -> int:
                     print("  " + offer.title + " | ended: " +
                           (offer.expires_on or "not confirmed") + " | " + offer.source_url)
         return 0
+
+    if command == "billing-probe":
+        from .billing_research import inspect_billing
+        outcome = inspect_billing(
+            adb=args.adb, serial=args.serial, runtime=args.runtime,
+            frida_device_id=args.frida_device_id,
+        )
+        if args.json:
+            print(json.dumps(outcome.as_dict(), ensure_ascii=False, indent=2))
+        else:
+            print("Android Billing research:", outcome.state)
+            print("ChatGPT installed:", outcome.app_installed)
+            print("Google Play installed:", outcome.play_store_installed)
+            print("ChatGPT version:", outcome.app_version or "unknown")
+            print("Frida runtime:", outcome.runtime_status)
+            if outcome.billing_library_loaded is not None:
+                print("BillingClient class observed:", outcome.billing_library_loaded)
+                print("Loaded class names:", ", ".join(outcome.billing_classes_loaded) or "none")
+            print(outcome.message)
+            print("Personal eligibility: NOT VERIFIED; subscription: NOT VERIFIED")
+            print("No offer query, purchase token access or checkout was performed.")
+        if outcome.state != "inspected":
+            return 1
+        return 0 if outcome.runtime_status in ("not_requested", "complete") else 2
 
     if command == "tui":
         try:
