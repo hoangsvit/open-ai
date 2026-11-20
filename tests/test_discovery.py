@@ -81,6 +81,73 @@ class DiscoveryTests(unittest.TestCase):
         self.assertEqual(scanned, 1)
         self.assertTrue(any("no promotion-related" in x for x in errors))
 
+    def test_official_rss_fallback_works_when_html_sources_are_blocked(self):
+        rss = """<?xml version="1.0"?><rss version="2.0"><channel>
+        <item><title>ChatGPT Go trial promotion announced</title>
+        <link>https://openai.com/index/chatgpt-go-trial-announced/</link></item>
+        <item><title>General research</title>
+        <link>https://openai.com/index/research-paper/</link></item>
+        <item><title>ChatGPT Free promotion</title>
+        <link>https://openai.com.evil.example/index/chatgpt-free-promo/</link></item>
+        </channel></rss>"""
+        suggestions, errors, count = discover_candidates(
+            self.catalog,
+            fetcher=lambda _: (_ for _ in ()).throw(TimeoutError("blocked")),
+            roots=(ROOT,),
+            feed_roots=("https://openai.com/news/rss.xml",),
+            feed_fetcher=lambda _: rss,
+        )
+        self.assertEqual(count, 1)
+        self.assertEqual(len(suggestions), 1)
+        self.assertEqual(suggestions[0].review_status, "pending_review")
+        self.assertEqual(suggestions[0].url,
+                         "https://openai.com/index/chatgpt-go-trial-announced")
+        self.assertTrue(any("unavailable" in error for error in errors))
+
+    def test_rss_never_overrides_already_reviewed_or_seen_entries(self):
+        xml = """<rss><channel><item><title>ChatGPT Go trial promotion</title>
+            <link>https://openai.com/index/chatgpt-go-trial-announced/</link>
+            </item></channel></rss>"""
+        suggestions, errors, count = discover_candidates(
+            self.catalog, roots=(), previously_seen={
+                "https://openai.com/index/chatgpt-go-trial-announced"
+            },
+            feed_roots=("https://openai.com/news/rss.xml",),
+            feed_fetcher=lambda _: xml,
+        )
+        self.assertEqual(count, 1)
+        self.assertEqual(suggestions, [])
+        self.assertEqual(errors, [])
+
+    def test_invalid_xml_or_empty_feed_not_counted(self):
+        for xml in ("<rss><channel>", "<html><body></body></html>",
+                    "<rss><channel></channel></rss>"):
+            with self.subTest(xml=xml):
+                suggestions, errors, count = discover_candidates(
+                    self.catalog, roots=(),
+                    feed_roots=("https://openai.com/news/rss.xml",),
+                    feed_fetcher=lambda _: xml,
+                )
+                self.assertEqual(count, 0)
+                self.assertEqual(suggestions, [])
+                self.assertTrue(any("RSS unavailable" in e for e in errors))
+
+    def test_atom_feed_is_read_as_pending_review_only(self):
+        xml = """<feed xmlns="http://www.w3.org/2005/Atom">
+            <entry><title>ChatGPT Plus free trial offer details</title>
+            <link href="https://openai.com/index/chatgpt-plus-trial/"
+             rel="alternate" /></entry>
+            </feed>"""
+        suggestions, errors, count = discover_candidates(
+            self.catalog, roots=(),
+            feed_roots=("https://openai.com/news/rss.xml",),
+            feed_fetcher=lambda _: xml,
+        )
+        self.assertEqual(count, 1)
+        self.assertFalse(errors)
+        self.assertEqual(len(suggestions), 1)
+        self.assertEqual(suggestions[0].review_status, "pending_review")
+
     def test_host_allowlist_and_path(self):
         self.assertEqual(canonical_url(NEW + "?campaign=one"), NEW)
         for url in [
