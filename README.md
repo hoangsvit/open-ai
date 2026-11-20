@@ -27,6 +27,21 @@ py -3 -m venv .venv
 
 On Linux/macOS use `python3 -m venv .venv` and `.venv/bin/python -m pip install -e ".[tui]"`. The CLI has no required third-party dependencies: `python -m pip install -e .`.
 
+## Android Billing research (opt-in)
+
+`billing-probe` is a **passive research** command inspired by the Android diagnostics in `google-ai`, not its Google One checkout flow. It first detects ChatGPT and the Google Play Store using ADB. An optional `--runtime` attaches Frida **only to a running ChatGPT process** and enumerates loaded class names from a strict Billing Library allowlist; no BillingClient method is called or hooked.
+
+```powershell
+python -m open_ai_inspector billing-probe
+python -m open_ai_inspector billing-probe --json
+
+# Optional runtime inspection; only on your own test device
+python -m pip install -e ".[billing]"
+python -m open_ai_inspector billing-probe --runtime --json
+```
+
+The report cannot prove that a Play Billing product, free trial, offer token, eligible account, successful purchase or active subscription exists. **No checkout or extension is performed.** Root, emulator setup and Frida server management are intentionally not automated. See [Android Billing research documentation](docs/ANDROID-BILLING.md).
+
 ## CLI
 
 ```powershell
