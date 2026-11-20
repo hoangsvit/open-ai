@@ -157,6 +157,18 @@ class BillingResearchTests(unittest.TestCase):
         self.assertFalse(result.billing_library_loaded)
         self.assertFalse(result.eligibility_verified)
 
+    def test_product_details_alone_indicates_a_loaded_billing_class(self):
+        runner, _ = fake_adb()
+        frida, _ = fake_frida({
+            "type": "billing_class_probe",
+            "java_available": True,
+            "loaded_classes": [BILLING_CLASSES[2]],
+        })
+        result = inspect_billing(adb="adb", runtime=True, runner=runner, frida_module=frida)
+        self.assertEqual(result.runtime_status, "complete")
+        self.assertTrue(result.billing_library_loaded)
+        self.assertFalse(result.subscription_verified)
+
     def test_rejects_unexpected_agent_payload(self):
         frida, device = fake_frida({
             "type": "billing_class_probe",
