@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "note": "Unverified link leads only; no individual eligibility claims.",
+  "candidates": [
+    {
+      "title": "ChatGPT Plus for veterans and servicemembers",
+      "url": "https://openai.com/index/chatgpt-plus-for-veterans",
+      "discovered_from": "https://openai.com/news/rss.xml",
+      "review_status": "pending_review"
+    }
+  ]
+}
