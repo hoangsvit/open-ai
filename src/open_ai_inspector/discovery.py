@@ -127,6 +127,9 @@ def fetch_official_feed(url: str) -> str:
 
 def _feed_links(xml_text: str) -> list[tuple[str, str]]:
     """Parse standard RSS/Atom entries, not external entities or arbitrary HTML."""
+    # Reject DTD/entity declarations to avoid untrusted XML expansion.
+    if "<!DOCTYPE" in xml_text.upper() or "<!ENTITY" in xml_text.upper():
+        raise DiscoveryError("XML declarations not allowed")
     try:
         root = ET.fromstring(xml_text)
     except ET.ParseError as exc:
@@ -181,7 +184,10 @@ def discover_candidates(
             html = fetcher(source)
         except (CatalogError, DiscoveryError, HTTPError, URLError, OSError, TimeoutError) as exc:
             # Avoid echoing error contents, which can contain URLs or secrets.
-            errors.append("Official source unavailable (" + type(exc).__name__ + ")")
+            code = " HTTP " + str(exc.code) if isinstance(exc, HTTPError) else ""
+            host = urlsplit(source).hostname or "unknown"
+            errors.append("Official HTML unavailable (" + host + ", " +
+                          type(exc).__name__ + code + ")")
             continue
         parser = _Anchors()
         parser.feed(html)
