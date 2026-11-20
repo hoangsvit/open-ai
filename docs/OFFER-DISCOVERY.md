@@ -33,7 +33,7 @@ A GitHub Actions job scans selected **public** pages at OpenAI Help Center and O
 
 - Suggestions are deduplicated against the curated references, current and expired programs, and candidates already submitted.
 - New leads go to `data/discovered-candidates.json` in a **Draft PR** from `automation/offer-discovery`, never directly to `main`.
-- Zero discoveries means no PR. If all official pages are unavailable, the run fails without submitting changes.
+- Zero verified new links means no PR. If all official pages are unavailable **or return no parseable public links**, the run fails without submitting changes. An HTML page with unrelated links produces a warning, not a false success claim about offer coverage.
 - Previously submitted unmerged candidates are retained in the automation branch.
 - Reviewers must verify benefit, regional scope, dates, claim URL, account eligibility and any charges before copying anything into the curated catalog.
 
@@ -43,8 +43,16 @@ GitHub Actions pull-request creation requires **Settings → Actions → General
 
 ```powershell
 python -m open_ai_inspector promos
-python -m open_ai_inspector promos --include-expired
+python -m open_ai_inspector promos --include-archived
+python -m open_ai_inspector promos --json --include-archived
 python scripts/discover_offers.py
 ```
 
 Only the discovery script uses public network requests. Offer catalog reads are offline. Never enter or publish private referral links, account credentials or promo codes.
+
+## Offer evidence freshness
+
+- `archive_reason=expired`: the published deadline passed or the program was explicitly marked expired.
+- `archive_reason=needs_reverification`: the evidence is more than 30 days old or dated in the future; **do not claim the promotion ended**. It may remain available, but current eligibility must be reconfirmed.
+- Neither a public source nor a successful crawler run confirms personal eligibility or a completed redemption.
+- A scheduled job can be tested by opening GitHub **Actions → Offer discovery → Run workflow** after merge. Inspect the actual logs for parseable links, source warnings and GitHub's permission to create Draft PRs.

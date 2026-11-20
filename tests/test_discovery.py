@@ -62,6 +62,25 @@ class DiscoveryTests(unittest.TestCase):
         self.assertEqual(len(errors), 1)
         self.assertNotIn("source failure", errors[0])
 
+    def test_js_only_html_is_not_counted_as_valid_scan(self):
+        proposals, errors, scanned = discover_candidates(
+            self.catalog,
+            fetcher=lambda _: '<html><div id="root"></div><script>load()</script></html>',
+            roots=(ROOT,),
+        )
+        self.assertEqual(proposals, [])
+        self.assertEqual(scanned, 0)
+        self.assertIn("no parseable links", " ".join(errors))
+
+    def test_search_page_without_relevant_articles_has_diagnostic(self):
+        html = '<a href="/en/articles/123-product-overview">General docs</a>'
+        proposals, errors, scanned = discover_candidates(
+            self.catalog, fetcher=lambda _: html, roots=(ROOT,)
+        )
+        self.assertEqual(proposals, [])
+        self.assertEqual(scanned, 1)
+        self.assertTrue(any("no promotion-related" in x for x in errors))
+
     def test_host_allowlist_and_path(self):
         self.assertEqual(canonical_url(NEW + "?campaign=one"), NEW)
         for url in [

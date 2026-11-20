@@ -122,25 +122,37 @@ def discover_candidates(
         try:
             official_url(source)
             html = fetcher(source)
-            scanned += 1
         except (CatalogError, DiscoveryError, HTTPError, URLError, OSError, TimeoutError) as exc:
             # Avoid echoing error contents, which can contain URLs or secrets.
             errors.append("Official source unavailable (" + type(exc).__name__ + ")")
             continue
         parser = _Anchors()
         parser.feed(html)
+        if not parser.links:
+            # A JS-only shell or blocked response may return HTTP 200, yet
+            # supply no discoverable URLs. This is not a healthy scan.
+            errors.append("Official source contained no parseable links (possibly JS-only)")
+            continue
+        scanned += 1
+        relevant_links = 0
         for href, title in parser.links[:300]:
             try:
                 url = canonical_url(urljoin(source, href))
             except (CatalogError, ValueError):
                 continue
-            if url in known or url in suggestions:
-                continue
             if not (_PROMO_TERMS.search(title) or _PATH_TERMS.search(urlsplit(url).path)):
+                continue
+            relevant_links += 1
+            if url in known or url in suggestions:
                 continue
             suggestions[url] = Candidate(title=title, url=url, discovered_from=source)
             if len(suggestions) >= 30:
                 break
+        if relevant_links == 0:
+            errors.append(
+                "Official source had links but no promotion-related article URLs; "
+                "search results may render dynamically"
+            )
         if len(suggestions) >= 30:
             break
     return sorted(suggestions.values(), key=lambda item: item.url), errors, scanned
