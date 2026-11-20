@@ -29,7 +29,7 @@ def build_parser() -> argparse.ArgumentParser:
     offers = cmds.add_parser("promos", help="Official resources and dated public offers")
     offers.add_argument("--catalog", help="Optional local JSON catalog")
     offers.add_argument("--json", action="store_true")
-    offers.add_argument("--include-expired", action="store_true", help="Show archived or stale promotions")
+    offers.add_argument("--include-expired", "--include-archived", action="store_true", help="Show expired and older unverified entries (legacy flag retained)")
 
     billing = cmds.add_parser(
         "billing-probe",
@@ -82,7 +82,10 @@ def main(argv: list[str] | None = None) -> int:
             print("Catalog error: " + str(exc), file=sys.stderr)
             return 2
         if args.json:
-            print(json.dumps(catalog.as_dict(), ensure_ascii=False, indent=2))
+            payload = catalog.as_dict()
+            if not args.include_expired:
+                payload.pop("archived_offers")
+            print(json.dumps(payload, ensure_ascii=False, indent=2))
         else:
             print("Official information resources:")
             for ref in catalog.references:
@@ -104,11 +107,12 @@ def main(argv: list[str] | None = None) -> int:
                     if offer.claim_url:
                         print("  Official claim page: " + offer.claim_url)
             if args.include_expired:
-                print("Expired or stale programs (NOT currently claimable):")
+                print("ARCHIVED PROGRAMS: expired or not recently reverified.")
                 for offer in catalog.archived_offers:
                     print("  Provider: " + offer.provider + " | Type: " + offer.offer_type)
-                    print("  " + offer.title + " | ended: " +
-                          (offer.expires_on or "not confirmed") + " | " + offer.source_url)
+                    print("  " + offer.title + " | " + (offer.archive_reason or "unknown"))
+                    print("  Claim deadline: " + (offer.expires_on or "not published"))
+                    print("  Terms: " + offer.source_url)
         return 0
 
     if command == "billing-probe":

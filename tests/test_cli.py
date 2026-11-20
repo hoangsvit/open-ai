@@ -39,6 +39,23 @@ class CliTests(unittest.TestCase):
         self.assertIn("Claim deadline: not published", out.getvalue())
         self.assertIn("eligibility NOT guaranteed", out.getvalue())
 
+    def test_json_archive_flag_and_legacy_alias(self):
+        out = io.StringIO()
+        with contextlib.redirect_stdout(out):
+            self.assertEqual(main(["promos", "--json"]), 0)
+        data = json.loads(out.getvalue())
+        self.assertIn("offers", data)
+        self.assertNotIn("archived_offers", data)
+
+        for flag in ("--include-expired", "--include-archived"):
+            with self.subTest(flag=flag):
+                out = io.StringIO()
+                with contextlib.redirect_stdout(out):
+                    self.assertEqual(main(["promos", "--json", flag]), 0)
+                result = json.loads(out.getvalue())
+                self.assertGreater(len(result["archived_offers"]), 0)
+                self.assertTrue(all(x["archive_reason"] for x in result["archived_offers"]))
+
     def test_only_approved_platforms(self):
         for platform in ("web", "google", "apple"):
             self.assertTrue(guide_for(platform).url.startswith("https://"))

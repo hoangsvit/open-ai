@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, replace
 from datetime import date
 from importlib import resources
 import json
@@ -36,6 +36,7 @@ class PublicOffer:
     provider: str = "OpenAI"
     offer_type: str = "unknown"
     billing_note: str = ""
+    archive_reason: str | None = None  # expired or needs_reverification; never account eligibility
 
 
 @dataclass(frozen=True)
@@ -181,13 +182,12 @@ def load_catalog(path: str | Path | None = None, today: date | None = None) -> C
             expiry = date.fromisoformat(item.expires_on) if item.expires_on else None
         except ValueError as exc:
             raise CatalogError("Offer dates must use YYYY-MM-DD") from exc
-        if (
-            item.status == "expired"
-            or (expiry and expiry < current)
-            or (current - reviewed).days > 30
-            or reviewed > current
-        ):
-            archived.append(item)
+        if item.status == "expired" or (expiry and expiry < current):
+            archived.append(replace(item, archive_reason="expired"))
+        elif (current - reviewed).days > 30 or reviewed > current:
+            # Old research may still describe a running campaign. Do not call
+            # it "expired", but keep it out of recently-reviewed results.
+            archived.append(replace(item, archive_reason="needs_reverification"))
         else:
             # No claim deadline does NOT mean perpetual availability.
             # Status remains terms_published or targeted, never "active".

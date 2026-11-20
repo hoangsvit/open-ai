@@ -21,6 +21,16 @@ class TextualSmokeTests(unittest.IsolatedAsyncioTestCase):
                 await pilot.click("#google")
                 opener.assert_called_once_with("google")
 
+    async def test_offers_are_default_and_adb_is_not_called_on_start(self):
+        app = InspectorApp()
+        with patch("open_ai_inspector.tui.probe_android") as probe:
+            async with app.run_test(size=(100, 30)) as pilot:
+                await pilot.pause()
+                report = app.query_one("#report")
+                self.assertIsNotNone(report)
+                probe.assert_not_called()
+                self.assertEqual(app.query_one("#promos").variant, "primary")
+
     async def test_smaller_terminal_can_open_dashboard(self):
         app = InspectorApp()
         async with app.run_test(size=(80, 24)) as pilot:

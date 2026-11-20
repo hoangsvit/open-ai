@@ -26,12 +26,16 @@ class CatalogTests(unittest.TestCase):
         self.assertTrue(any("Teachers" in x.title for x in result.offers))
         self.assertEqual(len(result.archived_offers), 5)
         self.assertEqual(result.archived_offers[0].status, "expired")
+        self.assertEqual(result.archived_offers[0].archive_reason, "expired")
         self.assertFalse(result.as_dict()["eligibility_verified"])
 
     def test_stale_documented_program_is_not_shown_as_current(self):
         result = load_catalog(today=date(2027, 1, 19))
         self.assertFalse(result.offers)
         self.assertEqual(len(result.archived_offers), 11)
+        reasons = {item.id: item.archive_reason for item in result.archived_offers}
+        self.assertEqual(reasons["revolut-go-standard-plus-3m-2026"], "needs_reverification")
+        self.assertEqual(reasons["india-chatgpt-go-12m-2025"], "expired")
 
     def test_only_fresh_unexpired_offers(self):
         day = date(2026, 11, 19)
@@ -51,6 +55,10 @@ class CatalogTests(unittest.TestCase):
         ]}
         result = load_catalog(self.write(data), day)
         self.assertEqual([x.title for x in result.offers], ["current"])
+        self.assertEqual(
+            {x.title: x.archive_reason for x in result.archived_offers},
+            {"expired": "expired", "stale": "needs_reverification"},
+        )
 
     def test_reject_fake_domain(self):
         data = {"schema_version": 1, "references": [

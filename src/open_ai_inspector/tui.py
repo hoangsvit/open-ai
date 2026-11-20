@@ -12,13 +12,12 @@ from .device_probe import DeviceResult, probe_android
 from .subscriptions import GUIDES, open_official_page
 
 WELCOME = (
-    "ePlus ChatGPT Inspector  •  Read-only\n\n"
-    "GET STARTED\n"
-    "1  Detect ChatGPT on a connected Android device (optional ADB).\n"
-    "2  Check subscription management guidance for your purchase platform.\n"
-    "3  Browse OpenAI's official promotion documentation.\n\n"
-    "This tool cannot verify ChatGPT plan, renewal date or eligibility.\n"
-    "No Frida, root, purchase token access, checkout or subscription changes."
+    "ePlus ChatGPT Offer Inspector  •  Read-only\n\n"
+    "Discover public promotions and view eligibility requirements.\n"
+    "Check the official claim terms on the provider website.\n"
+    "Optionally inspect the Android app; ADB is not needed for offers.\n\n"
+    "This tool cannot confirm personal eligibility, renewal dates, or paid access.\n"
+    "No account access, purchase tokens, automated checkout, or subscriptions."
 )
 
 
@@ -47,9 +46,9 @@ class InspectorApp(App):
         yield Header(show_clock=True)
         yield Static("CHATGPT   /   SUBSCRIPTIONS & PROMOTIONS", id="hero")
         with Horizontal(id="nav"):
-            yield Button("Detect Android app", id="detect", variant="primary")
+            yield Button("Explore offers", id="promos", variant="primary")
             yield Button("Subscription guide", id="subscriptions")
-            yield Button("Official resources", id="promos")
+            yield Button("Android tools", id="detect")
         with VerticalScroll(id="panel"):
             yield Static(WELCOME, id="report", markup=False)
         yield Static("No account data accessed  •  No checkout  •  Q to exit", id="status")
@@ -58,6 +57,10 @@ class InspectorApp(App):
             yield Button("Google Play", id="google")
             yield Button("Apple help", id="apple")
         yield Footer()
+
+    def on_mount(self) -> None:
+        # Opening the catalog is entirely offline; Android/ADB remains optional.
+        self._show_promos()
 
     def _show(self, content: str, status: str = "Read-only") -> None:
         self.query_one("#report", Static).update(content)
@@ -134,9 +137,18 @@ class InspectorApp(App):
                     "",
                 ])
         if catalog.archived_offers:
-            lines.append("EXPIRED / STALE OFFERS — not available for claiming\n")
+            lines.append("ARCHIVED PROGRAMS — expired or need renewed verification\n")
             for offer in catalog.archived_offers:
-                lines.extend([offer.title, "Terms: " + offer.source_url, ""])
+                explanation = (
+                    "Claim window ended" if offer.archive_reason == "expired"
+                    else "Public evidence is stale; current claimability UNKNOWN"
+                )
+                lines.extend([
+                    offer.title,
+                    "Evidence status: " + explanation,
+                    "Claim deadline: " + (offer.expires_on or "not published"),
+                    "Terms: " + offer.source_url, "",
+                ])
         self._show("\n".join(lines), "Offer documentation is not account eligibility")
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
