@@ -82,9 +82,9 @@ Only exact approved official partner domains are accepted as evidence. Redemptio
 
 ## Automatic offer discovery
 
-GitHub Actions checks official public OpenAI pages every **6 hours** and proposes newly linked ChatGPT promotion pages as **pending-review leads** in a Draft PR. It never publishes a link as a verified, redeemable promotion on its own. A reviewer must validate the terms, region, end date, eligibility and applicable charges.
+GitHub Actions checks official public OpenAI HTML pages **and the [official OpenAI News RSS feed](https://openai.com/news/rss.xml)** every **6 hours** and proposes promotion-like ChatGPT article links as **pending-review leads** in a Draft PR. It never publishes a link as a verified, redeemable promotion on its own. A reviewer must validate the terms, region, end date, eligibility and applicable charges.
 
-Run discovery manually with `python scripts/discover_offers.py`. Discovery fails closed when no source provides parseable links, and warns if a source contains no promotion-like public articles. OpenAI/Help Center may change markup or render results in JavaScript, so a successful CI test is **not** proof the scheduled crawler found a real offer. It does not fetch account offers, email, cookies, payment data or use undocumented APIs.
+Run discovery manually with `python scripts/discover_offers.py`. Discovery fails closed when all official HTML and RSS sources are inaccessible or cannot be parsed, and warns if readable sources contain no promotion-like public articles. OpenAI/Help Center may change markup or render results in JavaScript, so a successful CI test is **not** proof the scheduled crawler found a real offer. It does not fetch account offers, email, cookies, payment data or use undocumented APIs.
 
 See [Offer discovery design and limitations](docs/OFFER-DISCOVERY.md).
 
