@@ -11,7 +11,7 @@ from pathlib import Path
 import sys
 
 from open_ai_inspector.catalog import load_catalog
-from open_ai_inspector.discovery import canonical_url, discover_candidates
+from open_ai_inspector.discovery import OFFICIAL_FEEDS, canonical_url, discover_candidates
 
 
 def update_candidates(catalog_path: str, target: Path) -> tuple[int, int, list[str]]:
@@ -29,7 +29,7 @@ def update_candidates(catalog_path: str, target: Path) -> tuple[int, int, list[s
                 raise ValueError("Duplicate candidate URL")
             previous[key] = item
     proposals, errors, roots_ok = discover_candidates(
-        catalog, previously_seen=set(previous)
+        catalog, previously_seen=set(previous), feed_roots=OFFICIAL_FEEDS
     )
     if not roots_ok:
         return 0, 0, errors
@@ -57,11 +57,11 @@ def main(argv: list[str] | None = None) -> int:
     except (OSError, ValueError) as exc:
         print("Catalog or inbox error: " + type(exc).__name__, file=sys.stderr)
         return 2
-    print(f"Scanned {scanned} official pages; found {added} new candidate link(s).")
+    print(f"Scanned {scanned} official HTML/RSS sources; found {added} new candidate link(s).")
     for error in errors:
         print("Warning: " + error, file=sys.stderr)
     if scanned == 0:
-        print("No official source could be read. No candidates published.", file=sys.stderr)
+        print("All official HTML/RSS sources unavailable. No candidates published.", file=sys.stderr)
         return 1
     if added:
         print("New links require human review; no offer has been activated.")

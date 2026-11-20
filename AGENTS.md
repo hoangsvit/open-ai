@@ -49,3 +49,10 @@ An independent, read-only ChatGPT subscription and promotion information tool.
 - The packaged agent may only enumerate fixed Google Play Billing class names. It must not call/hook BillingClient methods, read fields, dump memory, intercept offer/purchase tokens, submit purchases or interact with checkout.
 - Require a pinned Frida runtime with bundled Java bridge; do not silently upgrade/install/root/start a server or attach to multiple ambiguous devices.
 - Do not emit device serials or raw Frida/ADB responses in reports. Mock all runtime calls in CI and document that real hardware behavior remains unverified.
+
+## Public official RSS fallback
+
+- The scheduled HTML crawler may be blocked by OpenAI. Official OpenAI News RSS is allowed as a separate public source, **not** as proof of offer availability.
+- Parse only bounded RSS/Atom XML using the strict official OpenAI HTTPS URL checks; no arbitrary feeds, third-party proxies, DTD/entities or dynamic URLs.
+- Source outages must remain visible as failures when both HTML and RSS cannot be read. A healthy feed with no eligible articles must not generate artificial candidates or a maintenance PR.
+- Preserve manual review and `pending_review` for RSS-derived candidates. Verify live GitHub Actions access separately from offline CI.
