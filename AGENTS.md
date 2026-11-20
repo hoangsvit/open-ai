@@ -5,7 +5,7 @@ An independent, read-only ChatGPT subscription and promotion information tool.
 ## Do not
 
 - Collect passwords, cookies, tokens, payment information or ChatGPT credentials.
-- Add Frida, root, hidden app APIs, BillingClient injection, token extraction, automated purchases or extension attempts.
+- Add Frida method hooks, hidden billing API calls, root escalation, token extraction, automated purchases or extension attempts. The only permitted Frida use is explicit, one-shot, passive loaded-class-name enumeration in a user-authorized environment; no method replacement.
 - Claim entitlement, pricing, zero-dollar offers or eligibility without authorized official evidence.
 - Print device serials, raw account information, secrets or full sensitive ADB output.
 - Auto-open links or initiate checkout without direct user action.
@@ -41,3 +41,11 @@ An independent, read-only ChatGPT subscription and promotion information tool.
 - Do not include archived records in default `promos --json`; `--include-archived` explicitly opts in.
 - A source returning HTTP 200 with no parseable links is not a successful scan; log non-sensitive diagnostics and fail if no useful source remains.
 - Offer-first TUI; Android/ADB is optional and must never trigger on launch.
+
+## Android Billing research (optional)
+
+- ADB static inspection and `billing-probe` never prove actual product/offer availability, eligibility, or billing status.
+- Runtime Frida class inventory requires direct user opt-in; never run it on startup, during a scheduled job, or when browsing promotions.
+- The packaged agent may only enumerate fixed Google Play Billing class names. It must not call/hook BillingClient methods, read fields, dump memory, intercept offer/purchase tokens, submit purchases or interact with checkout.
+- Require a pinned Frida runtime with bundled Java bridge; do not silently upgrade/install/root/start a server or attach to multiple ambiguous devices.
+- Do not emit device serials or raw Frida/ADB responses in reports. Mock all runtime calls in CI and document that real hardware behavior remains unverified.
