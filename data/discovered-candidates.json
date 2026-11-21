@@ -3,6 +3,42 @@
   "note": "Unverified link leads only; no individual eligibility claims.",
   "candidates": [
     {
+      "title": "ChatGPT Plus promotions and referrals Learn about the terms for ChatGPT Plus promotions.",
+      "url": "https://help.openai.com/en/articles/10492689-chatgpt-plus-promotions-and-referrals",
+      "discovered_from": "https://help.openai.com/en/?q=chatgpt+promotions",
+      "review_status": "pending_review"
+    },
+    {
+      "title": "ChatGPT Go promotions and referrals Learn about terms, eligibility, and billing for ChatGPT Go promotions.",
+      "url": "https://help.openai.com/en/articles/12501659-chatgpt-go-promotions-and-referrals",
+      "discovered_from": "https://help.openai.com/en/?q=chatgpt+promotions",
+      "review_status": "pending_review"
+    },
+    {
+      "title": "ChatGPT Desktop Referral Promotions Terms for ChatGPT Desktop referral offers",
+      "url": "https://help.openai.com/en/articles/20001271-chatgpt-desktop-referral-promotions",
+      "discovered_from": "https://help.openai.com/en/?q=chatgpt+promotions",
+      "review_status": "pending_review"
+    },
+    {
+      "title": "ChatGPT Business plugin credit promotions Learn about eligibility, qualifying workflows, and terms for partner plugin credit offers in ChatGPT Business.",
+      "url": "https://help.openai.com/en/articles/20001514-chatgpt-business-plugin-credit-promotions",
+      "discovered_from": "https://help.openai.com/en/?q=chatgpt+promotions",
+      "review_status": "pending_review"
+    },
+    {
+      "title": "Getting ChatGPT Business credits on an eligible Lenovo PC Learn how to claim promotional workspace credits on an eligible Lenovo Windows PC that came with ChatGPT preinstalled.",
+      "url": "https://help.openai.com/en/articles/20001705-getting-chatgpt-business-credits-on-an-eligible-lenovo-pc",
+      "discovered_from": "https://help.openai.com/en/?q=chatgpt+student+offer",
+      "review_status": "pending_review"
+    },
+    {
+      "title": "ChatGPT Free Tier FAQ ChatGPT is free to use. Free tier users have access to a range of chat capabilities, tools, and GPTs. The default model and available limits can change over t",
+      "url": "https://help.openai.com/en/articles/9275245-chatgpt-free-tier-faq",
+      "discovered_from": "https://help.openai.com/en/?q=chatgpt+promotions",
+      "review_status": "pending_review"
+    },
+    {
       "title": "ChatGPT Plus for veterans and servicemembers",
       "url": "https://openai.com/index/chatgpt-plus-for-veterans",
       "discovered_from": "https://openai.com/news/rss.xml",
